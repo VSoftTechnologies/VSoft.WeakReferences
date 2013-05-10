@@ -96,6 +96,7 @@ type
 implementation
 
 uses
+  TypInfo,
   classes,
   sysutils;
 
@@ -138,7 +139,9 @@ begin
   result := Default(T); /// can't assign nil to T
   if FData <> nil then
   begin
-    if Supports(FData,IInterface,result) then
+    //Make sure that the object supports the interface which is our generic type if we
+    //simply pass in the interface base type, the method table doesn't work correctly
+    if Supports(FData, GetTypeData(TypeInfo(T))^.Guid, result) then
       result := T(result);
   end;
 end;
