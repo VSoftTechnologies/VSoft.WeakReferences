@@ -15,7 +15,7 @@ uses
 
 var
   runner : ITestRunner;
-  results : ITestResults;
+  results : IRunResults;
   logger : ITestLogger;
   nunitLogger : ITestLogger;
 begin
@@ -25,7 +25,7 @@ begin
     runner.UseRTTI := True;
     //tell the runner how we will log things
     logger := TDUnitXConsoleLogger.Create;
-    nunitLogger := TDUnitXXMLNUnitLogger_File.Create;
+    nunitLogger := TDUnitXXMLNUnitFileLogger.Create;
     runner.AddLogger(logger);
     runner.AddLogger(nunitLogger);
 
