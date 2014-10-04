@@ -50,6 +50,7 @@ uses
 type
   EWeakReferenceNotSupportedError = class(Exception);
 
+  {$REGION 'IWeakReferenceableObject'}
   /// Implemented by our weak referenced object base class
   IWeakReferenceableObject = interface
     ['{3D7F9CB5-27F2-41BF-8C5F-F6195C578755}']
@@ -57,7 +58,9 @@ type
     procedure RemoveWeakRef(value : Pointer);
     function GetRefCount : integer;
   end;
+  {$ENDREGION}
 
+  {$REGION 'TWeakReferencedObject'}
   ///  This is our base class for any object that can have a weak reference to
   ///  it. It implements IInterface so the object can also be used just like
   ///  any normal reference counted objects in Delphi.
@@ -77,14 +80,18 @@ type
     class function NewInstance: TObject; override;
     property RefCount: Integer read FRefCount;
   end;
+  {$ENDREGION}
 
+  {$REGION 'IWeakReference'}
   // This is our generic WeakReference interface
   IWeakReference<T : IInterface> = interface
     ['{A6B88944-15A2-4FFD-B755-1B17960401BE}']
     function IsAlive : boolean;
     function Data : T;
   end;
+  {$ENDREGION}
 
+  {$REGION 'TWeakReference'}
   //The aatual WeakReference implementation.
   TWeakReference<T: IInterface> = class(TInterfacedObject,IWeakReference<T>)
   private
@@ -96,6 +103,7 @@ type
     constructor Create(const data : T);
     destructor Destroy;override;
   end;
+  {$ENDREGION}
 
   procedure RaiseWeakReferenceNotSupportedError;
 
@@ -127,7 +135,7 @@ asm
       DEC   EAX
 end;
 
-
+{$REGION 'TWeakReference'}
 constructor TWeakReference<T>.Create(const data: T);
 var
   weakRef : IWeakReferenceableObject;
@@ -175,7 +183,9 @@ function TWeakReference<T>.IsAlive: boolean;
 begin
   result := FData <> nil;
 end;
+{$ENDREGION}
 
+{$REGION 'TWeakReferencedObject'}
 { TWeakReferencedObject }
 
 procedure TWeakReferencedObject.AddWeakRef(value: Pointer);
@@ -269,7 +279,6 @@ begin
     Result := E_NOINTERFACE;
 end;
 
-
 function TWeakReferencedObject._AddRef: Integer;
 begin
   Result := InterlockedIncrement(FRefCount);
@@ -281,5 +290,6 @@ begin
   if Result = 0  then
     Destroy;
 end;
+{$ENDREGION}
 
 end.
