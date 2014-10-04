@@ -44,7 +44,12 @@ unit VSoft.WeakReference;
 
 interface
 
+uses
+  System.SysUtils;
+
 type
+  EWeakReferenceNotSupportedError = class(Exception);
+
   /// Implemented by our weak referenced object base class
   IWeakReferenceableObject = interface
     ['{3D7F9CB5-27F2-41BF-8C5F-F6195C578755}']
@@ -92,14 +97,18 @@ type
     destructor Destroy;override;
   end;
 
+  procedure RaiseWeakReferenceNotSupportedError;
 
 implementation
 
 uses
   TypInfo,
-  classes,
-  sysutils;
+  classes;
 
+procedure RaiseWeakReferenceNotSupportedError;
+begin
+  raise EWeakReferenceNotSupportedError.Create('TWeakReference can only be used with objects derived from TWeakReferencedObject');
+end;
 
 //copied from system since they are not exposed for us to use.s
 function InterlockedIncrement(var Addend: Integer): Integer;
@@ -131,7 +140,7 @@ begin
     weakRef.AddWeakRef(@FData);
   end
   else
-    raise Exception.Create('TWeakReference can only be used with objects derived from TWeakReferencedObject');
+    RaiseWeakReferenceNotSupportedError;
 end;
 
 function TWeakReference<T>.Data: T;
@@ -272,6 +281,5 @@ begin
   if Result = 0  then
     Destroy;
 end;
-
 
 end.
