@@ -9,7 +9,9 @@ uses
   DUnitX.Loggers.XML.NUnit,
   DUnitX.Windows.Console,
   VSoft.WeakReference in '..\VSoft.WeakReference.pas',
-  VSoft.Tests.WeakReference in 'VSoft.Tests.WeakReference.pas';
+  VSoft.Tests.WeakReference in 'VSoft.Tests.WeakReference.pas',
+  VSoft.Tests.Lifecycle in 'VSoft.Tests.Lifecycle.pas',
+  VSoft.Tests.Classhelpers.Assert in 'VSoft.Tests.Classhelpers.Assert.pas';
 
 {$R *.RES}
 

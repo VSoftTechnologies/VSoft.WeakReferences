@@ -68,9 +68,9 @@ type
   protected
     FWeakReferences : Array of Pointer;
     FRefCount: Integer;
-    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
-    function _AddRef: Integer; stdcall;
-    function _Release: Integer; stdcall;
+    function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
+    function _AddRef: Integer; virtual; stdcall;
+    function _Release: Integer; virtual; stdcall;
     procedure AddWeakRef(value : Pointer);
     procedure RemoveWeakRef(value : Pointer);
     function GetRefCount : integer;
@@ -79,6 +79,13 @@ type
     procedure BeforeDestruction; override;
     class function NewInstance: TObject; override;
     property RefCount: Integer read FRefCount;
+  end;
+  {$ENDREGION}
+
+  {$REGION 'TNoCountedWeakReferencedObject'}
+  TNoCountedWeakReferencedObject = class(TWeakReferencedObject, IInterface)
+  public
+    function _Release: Integer; override; stdcall;
   end;
   {$ENDREGION}
 
@@ -289,6 +296,15 @@ begin
   Result := InterlockedDecrement(FRefCount);
   if Result = 0  then
     Destroy;
+end;
+{$ENDREGION}
+
+{$REGION 'TNoCountedWeakReferencedObject'}
+{ TNoCountedWeakReferencedObject }
+
+function TNoCountedWeakReferencedObject._Release: Integer;
+begin
+  Result := InterlockedDecrement(FRefCount);
 end;
 {$ENDREGION}
 
