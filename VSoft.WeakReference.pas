@@ -71,9 +71,9 @@ type
     function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
     function _AddRef: Integer; virtual; stdcall;
     function _Release: Integer; virtual; stdcall;
-    procedure AddWeakRef(value : Pointer);
-    procedure RemoveWeakRef(value : Pointer);
-    function GetRefCount : integer;
+    procedure AddWeakRef(value : Pointer); virtual;
+    procedure RemoveWeakRef(value : Pointer); virtual;
+    function GetRefCount : integer; virtual;
   public
     procedure AfterConstruction; override;
     procedure BeforeDestruction; override;
@@ -95,6 +95,7 @@ type
     ['{A6B88944-15A2-4FFD-B755-1B17960401BE}']
     function IsAlive : boolean;
     function Data : T;
+    function DataImplementer: TWeakReferencedObject;
   end;
   {$ENDREGION}
 
@@ -102,13 +103,34 @@ type
   //The aatual WeakReference implementation.
   TWeakReference<T: IInterface> = class(TInterfacedObject,IWeakReference<T>)
   private
-    FData : TObject;
+    FData : TWeakReferencedObject;
   protected
     function IsAlive : boolean;
     function Data : T;
+    function DataImplementer: TWeakReferencedObject;
   public
     constructor Create(const data : T);
     destructor Destroy;override;
+  end;
+  {$ENDREGION}
+
+  {$REGION 'TAggregatedWeakReferencedObject'}
+  TAggregatedWeakReferencedObject<T: IInterface> = class(TWeakReferencedObject, IInterface)
+  strict private
+    FController: IWeakReference<T>;
+  strict protected
+    function Controller: T;
+    function ControllerImplementer: TWeakReferencedObject;
+  public
+    constructor Create(const AController: T);
+
+    function QueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
+    function _AddRef: Integer; override; stdcall;
+    function _Release: Integer; override; stdcall;
+
+    procedure AddWeakRef(value : Pointer); override;
+    procedure RemoveWeakRef(value : Pointer); override;
+    function GetRefCount : integer; override;
   end;
   {$ENDREGION}
 
@@ -151,7 +173,7 @@ begin
   d := IInterface(data);
   if Supports(d,IWeakReferenceableObject,weakRef) then
   begin
-    FData := d as TObject;
+    FData := d as TWeakReferencedObject;
     weakRef.AddWeakRef(@FData);
   end
   else
@@ -168,6 +190,11 @@ begin
     if Supports(FData, GetTypeData(TypeInfo(T))^.Guid, result) then
       result := T(result);
   end;
+end;
+
+function TWeakReference<T>.DataImplementer: TWeakReferencedObject;
+begin
+  Result := FData;
 end;
 
 destructor TWeakReference<T>.Destroy;
@@ -305,6 +332,55 @@ end;
 function TNoCountedWeakReferencedObject._Release: Integer;
 begin
   Result := InterlockedDecrement(FRefCount);
+end;
+{$ENDREGION}
+
+{$REGION 'TAggregatedWeakReferencedObject'}
+{ TAggregatedWeakReferencedObject }
+
+procedure TAggregatedWeakReferencedObject<T>.AddWeakRef(value: Pointer);
+begin
+  ControllerImplementer.AddWeakRef(value);
+end;
+
+function TAggregatedWeakReferencedObject<T>.Controller: T;
+begin
+  Result := FController.Data;
+end;
+
+function TAggregatedWeakReferencedObject<T>.ControllerImplementer: TWeakReferencedObject;
+begin
+  Result := FController.DataImplementer;
+end;
+
+constructor TAggregatedWeakReferencedObject<T>.Create(const AController: T);
+begin
+  FController := TWeakReference<T>.Create(AController);
+end;
+
+function TAggregatedWeakReferencedObject<T>.GetRefCount: integer;
+begin
+  Result := ControllerImplementer.GetRefCount;
+end;
+
+function TAggregatedWeakReferencedObject<T>.QueryInterface(const IID: TGUID; out Obj): HResult;
+begin
+  Result := Controller.QueryInterface(IID, Obj);
+end;
+
+procedure TAggregatedWeakReferencedObject<T>.RemoveWeakRef(value: Pointer);
+begin
+  ControllerImplementer.RemoveWeakRef(value);
+end;
+
+function TAggregatedWeakReferencedObject<T>._AddRef: Integer;
+begin
+  Result := Controller._AddRef;
+end;
+
+function TAggregatedWeakReferencedObject<T>._Release: Integer;
+begin
+  Result := Controller._Release;
 end;
 {$ENDREGION}
 

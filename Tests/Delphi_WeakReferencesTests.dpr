@@ -11,7 +11,9 @@ uses
   VSoft.WeakReference in '..\VSoft.WeakReference.pas',
   VSoft.Tests.WeakReference in 'VSoft.Tests.WeakReference.pas',
   VSoft.Tests.Lifecycle in 'VSoft.Tests.Lifecycle.pas',
-  VSoft.Tests.Classhelpers.Assert in 'VSoft.Tests.Classhelpers.Assert.pas';
+  VSoft.Tests.Classhelpers.Assert in 'VSoft.Tests.Classhelpers.Assert.pas',
+  VSoft.Tests.Behaviour in 'VSoft.Tests.Behaviour.pas',
+  VSoft.Tests.Behaviour.UseCases in 'VSoft.Tests.Behaviour.UseCases.pas';
 
 {$R *.RES}
 
