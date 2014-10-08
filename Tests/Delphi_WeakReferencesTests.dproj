@@ -90,6 +90,7 @@
         <DCCReference Include="VSoft.Tests.Classhelpers.Assert.pas"/>
         <DCCReference Include="VSoft.Tests.Behaviour.pas"/>
         <DCCReference Include="VSoft.Tests.Behaviour.UseCases.pas"/>
+        <DCCReference Include="VSoft.Tests.WeakReference.UseCases.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
