@@ -71,7 +71,7 @@ type
 implementation
 
 uses
-  VSoft.Tests.WeakReference.Helpers;
+  VSoft.Tests.WeakReference.UseCases, VSoft.Tests.Classhelpers.Assert;
 
 procedure TDUnitX_WeakReferenceXMLNUnitTests.After_Being_Assigned_To_Another_Interface_Properties_Can_Be_Called;
 var
@@ -142,18 +142,11 @@ end;
 procedure TDUnitX_WeakReferenceXMLNUnitTests.Create_WeakReference_To_Objects_Derived_From_TWeakReferenceedObject_Success;
 var
   mockInterface : ISimpleInterface;
-  weakRef : IWeakReference<ISimpleInterface>;
 begin
   //Setup
   mockInterface := TSimpleInterfacedObject.Create;
-
-  Assert.WillNotRaise(
-  procedure
-  begin
-    weakRef := TWeakReference<ISimpleInterface>.Create(mockInterface);
-  end,
-  EWeakReferenceNotSupportedError
-  );
+  //Test
+  Assert.IsWeakReferenceable<ISimpleInterface>(mockInterface);
 end;
 
 procedure TDUnitX_WeakReferenceXMLNUnitTests.Create_WeakReference_To_Objects_Not_Derived_From_TWeakReferenceedObject_ThrowsException;
@@ -163,13 +156,7 @@ var
 begin
   lNonWeakReferencableObject := TInterfacedObject.Create;
 
-  Assert.WillRaise(
-  procedure
-  begin
-    lWeakReferenceToNonWeakReferenceableObject := TWeakReference<IInterface>.Create(lNonWeakReferencableObject);
-  end,
-  EWeakReferenceNotSupportedError
-  );
+  Assert.IsNotWeakReferenceable<IInterface>(lNonWeakReferencableObject);
 end;
 
 initialization

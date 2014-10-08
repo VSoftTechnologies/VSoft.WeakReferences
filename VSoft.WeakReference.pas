@@ -83,6 +83,8 @@ type
   {$ENDREGION}
 
   {$REGION 'TNoCountedWeakReferencedObject'}
+  /// This class acts like a normal TObject but with the WeakReferenceable funcionality
+  /// from TWeakReferencedObject.
   TNoCountedWeakReferencedObject = class(TWeakReferencedObject, IInterface)
   public
     function _Release: Integer; override; stdcall;
@@ -115,6 +117,9 @@ type
   {$ENDREGION}
 
   {$REGION 'TAggregatedWeakReferencedObject'}
+  /// This class adds the weakreferenceable functionality to an aggregated object.
+  /// It behaves like the known TAggregatedObject from System.pas extended by an interface constraint
+  /// to declare its controller.
   TAggregatedWeakReferencedObject<T: IInterface> = class(TWeakReferencedObject, IInterface)
   strict private
     FController: IWeakReference<T>;
@@ -131,6 +136,16 @@ type
     procedure AddWeakRef(value : Pointer); override;
     procedure RemoveWeakRef(value : Pointer); override;
     function GetRefCount : integer; override;
+  end;
+  {$ENDREGION}
+
+  {$REGION 'TContainedWeakReferencedObject'}
+  /// This class adds the weakreferenceable functionality to an contained object.
+  /// It behaves like the known TContainedObject from System.pas extended by an interface constraint
+  /// to declare its controller.
+  TContainedWeakReferencedObject<T: IInterface> = class(TAggregatedWeakReferencedObject<T>, IInterface)
+  public
+    function QueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
   end;
   {$ENDREGION}
 
@@ -381,6 +396,18 @@ end;
 function TAggregatedWeakReferencedObject<T>._Release: Integer;
 begin
   Result := Controller._Release;
+end;
+{$ENDREGION}
+
+{$REGION 'TContainedWeakReferencedObject'}
+{ TContainedWeakReferencedObject<T> }
+
+function TContainedWeakReferencedObject<T>.QueryInterface(const IID: TGUID; out Obj): HResult;
+begin
+  if GetInterface(IID, Obj) then
+    Result := 0
+  else
+    Result := E_NOINTERFACE;
 end;
 {$ENDREGION}
 

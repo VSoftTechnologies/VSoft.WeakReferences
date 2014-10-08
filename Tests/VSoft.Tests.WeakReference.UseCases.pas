@@ -1,4 +1,4 @@
-unit VSoft.Tests.WeakReference.Helpers;
+unit VSoft.Tests.WeakReference.UseCases;
 
 interface
 

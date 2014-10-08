@@ -21,15 +21,21 @@ type
     function RefCount: Integer;
   end;
 
-  TClassThatImplementsTheDelegatedInterface<T: IInterfaceNotToDelegate> = class(TAggregatedWeakReferencedObject<T>, IInterfaceToDelegate)
+  TAggregatedObjectThatImplementsTheDelegatedInterface<T: IInterfaceNotToDelegate> = class(TAggregatedWeakReferencedObject<T>, IInterfaceToDelegate)
   public
     function TellMeYourName: String;
     function RefCount: Integer;
   end;
 
-  TClassThatDelegatesAnInterface = class(TWeakReferencedObject, IInterfaceToDelegate, IInterfaceNotToDelegate)
+  TContainedObjectThatImplementsTheDelegatedInterface<T: IInterfaceNotToDelegate> = class(TContainedWeakReferencedObject<T>, IInterfaceToDelegate)
+  public
+    function TellMeYourName: String;
+    function RefCount: Integer;
+  end;
+
+  TObjectThatDelegatesAnInterfaceToAggregatedObject = class(TWeakReferencedObject, IInterfaceToDelegate, IInterfaceNotToDelegate)
   strict protected
-    FAggregatedObject: TClassThatImplementsTheDelegatedInterface<IInterfaceNotToDelegate>;
+    FAggregatedObject: TAggregatedObjectThatImplementsTheDelegatedInterface<IInterfaceNotToDelegate>;
     function GetAggregatedObject: IInterfaceToDelegate;
     property AggregatedObjectThatDelegates: IInterfaceToDelegate read GetAggregatedObject implements IInterfaceToDelegate;
   public
@@ -39,6 +45,30 @@ type
     function RefCount: Integer;
   end;
 
+  TObjectThatDelegatesAnInterfaceToContainedObject = class(TWeakReferencedObject, IInterfaceToDelegate, IInterfaceNotToDelegate)
+  strict protected
+    FContainedObject: TContainedObjectThatImplementsTheDelegatedInterface<IInterfaceNotToDelegate>;
+    function GetContainedObject: IInterfaceToDelegate;
+    property ContainedObjectThatDelegates: IInterfaceToDelegate read GetContainedObject implements IInterfaceToDelegate;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    function TellMeYourName: String;
+    function RefCount: Integer;
+  end;
+
+  TSimpleAggregatedObject = class(TAggregatedObject, IInterface)
+  end;
+
+  TSimpleContainedObject = class(TContainedObject, IInterface)
+  end;
+
+  TSimpleObject = class(TObject, IInterface)
+  public
+    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function _AddRef: Integer; stdcall;
+    function _Release: Integer; stdcall;
+  end;
 
 implementation
 
@@ -47,42 +77,100 @@ uses
 
 { TClassThatDelegatesAnInterface }
 
-constructor TClassThatDelegatesAnInterface.Create;
+constructor TObjectThatDelegatesAnInterfaceToAggregatedObject.Create;
 begin
-  FAggregatedObject := TClassThatImplementsTheDelegatedInterface<IInterfaceNotToDelegate>.Create(Self);
+  FAggregatedObject := TAggregatedObjectThatImplementsTheDelegatedInterface<IInterfaceNotToDelegate>.Create(Self);
 end;
 
-destructor TClassThatDelegatesAnInterface.Destroy;
+destructor TObjectThatDelegatesAnInterfaceToAggregatedObject.Destroy;
 begin
   FreeAndNil(FAggregatedObject);
   inherited;
 end;
 
-function TClassThatDelegatesAnInterface.GetAggregatedObject: IInterfaceToDelegate;
+function TObjectThatDelegatesAnInterfaceToAggregatedObject.GetAggregatedObject: IInterfaceToDelegate;
 begin
   Result := FAggregatedObject;
 end;
 
-function TClassThatDelegatesAnInterface.RefCount: Integer;
+function TObjectThatDelegatesAnInterfaceToAggregatedObject.RefCount: Integer;
 begin
   Result := GetRefCount;
 end;
 
-function TClassThatDelegatesAnInterface.TellMeYourName: String;
+function TObjectThatDelegatesAnInterfaceToAggregatedObject.TellMeYourName: String;
 begin
   Result := Format(TELLMYNAME, [ClassName]);
 end;
 
 { TClassThatImplementsTheDelegatedInterface<T> }
 
-function TClassThatImplementsTheDelegatedInterface<T>.RefCount: Integer;
+function TAggregatedObjectThatImplementsTheDelegatedInterface<T>.RefCount: Integer;
 begin
   Result := GetRefCount;
 end;
 
-function TClassThatImplementsTheDelegatedInterface<T>.TellMeYourName: String;
+function TAggregatedObjectThatImplementsTheDelegatedInterface<T>.TellMeYourName: String;
 begin
   Result := Format(TELLMYNAMEANDCONTROLLER, [ClassName, Controller.TellMeYourName]);
+end;
+
+
+{ TObjectThatDelegatesAnInterfaceToContainedObject }
+
+constructor TObjectThatDelegatesAnInterfaceToContainedObject.Create;
+begin
+  FContainedObject := TContainedObjectThatImplementsTheDelegatedInterface<IInterfaceNotToDelegate>.Create(Self);
+end;
+
+destructor TObjectThatDelegatesAnInterfaceToContainedObject.Destroy;
+begin
+  FreeAndNil(FContainedObject);
+  inherited;
+end;
+
+function TObjectThatDelegatesAnInterfaceToContainedObject.GetContainedObject: IInterfaceToDelegate;
+begin
+  Result := FContainedObject;
+end;
+
+function TObjectThatDelegatesAnInterfaceToContainedObject.RefCount: Integer;
+begin
+  Result := GetRefCount;
+end;
+
+function TObjectThatDelegatesAnInterfaceToContainedObject.TellMeYourName: String;
+begin
+  Result := Format(TELLMYNAME, [ClassName]);
+end;
+
+{ TContainedObjectThatImplementsTheDelegatedInterface<T> }
+
+function TContainedObjectThatImplementsTheDelegatedInterface<T>.RefCount: Integer;
+begin
+  Result := GetRefCount;
+end;
+
+function TContainedObjectThatImplementsTheDelegatedInterface<T>.TellMeYourName: String;
+begin
+  Result := Format(TELLMYNAMEANDCONTROLLER, [ClassName, Controller.TellMeYourName]);
+end;
+
+{ TSimpleObject }
+
+function TSimpleObject.QueryInterface(const IID: TGUID; out Obj): HResult;
+begin
+
+end;
+
+function TSimpleObject._AddRef: Integer;
+begin
+
+end;
+
+function TSimpleObject._Release: Integer;
+begin
+
 end;
 
 end.
