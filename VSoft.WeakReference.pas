@@ -42,6 +42,8 @@ get releaseds.
 unit VSoft.WeakReference;
 
 
+{$I WeakRef.inc}
+
 interface
 
 type
@@ -56,7 +58,7 @@ type
   ///  This is our base class for any object that can have a weak reference to
   ///  it. It implements IInterface so the object can also be used just like
   ///  any normal reference counted objects in Delphi.
-  TWeakReferencedObject = class(TObject,IInterface,IWeakReferenceableObject)
+  TWeakReferencedObject = class(TObject, IInterface, IWeakReferenceableObject)
   protected
     FWeakReferences : Array of Pointer;
     FRefCount: Integer;
@@ -69,19 +71,19 @@ type
   public
     procedure AfterConstruction; override;
     procedure BeforeDestruction; override;
-    class function NewInstance: TObject; override;
+    {$IFDEF NEXTGEN}[Result: Unsafe]{$ENDIF} class function NewInstance: TObject; override;
     property RefCount: Integer read FRefCount;
   end;
 
   // This is our generic WeakReference interface
-  IWeakReference<T : IInterface> = interface
+  IWeakReference<T : IInterface> = interface//FI:W524
     ['{A6B88944-15A2-4FFD-B755-1B17960401BE}']
     function IsAlive : boolean;
     function Data : T;
   end;
 
-  //The aatual WeakReference implementation.
-  TWeakReference<T: IInterface> = class(TInterfacedObject,IWeakReference<T>)
+  //The actual WeakReference implementation.
+  TWeakReference<T: IInterface> = class(TInterfacedObject, IWeakReference<T>)
   private
     FData : TObject;
   protected
@@ -93,29 +95,61 @@ type
   end;
 
 
+resourcestring
+  SWeakReferenceError = 'TWeakReference can only be used with objects derived from TWeakReferencedObject';
+
 implementation
 
 uses
+  {$IFDEF USE_NS}
+  System.TypInfo,
+  System.Classes,
+  System.Sysutils,
+  System.SyncObjs;
+  {$ELSE}
+  TypInfo,
   classes,
-  sysutils;
+  SysUtils,
+  SyncObjs;
+  {$ENDIF}
 
+{$IFNDEF DELPHI_XE2_UP}
+type
+  TInterlocked = class
+  public
+    class function Increment(var Target: Integer): Integer; static; inline;
+    class function Decrement(var Target: Integer): Integer; static; inline;
+    class function Add(var Target: Integer; Increment: Integer): Integer;static;
+  end;
 
-//copied from system since they are not exposed for us to use.s
-function InterlockedIncrement(var Addend: Integer): Integer;
-asm
-      MOV   EDX,1
-      XCHG  EAX,EDX
- LOCK XADD  [EDX],EAX
-      INC   EAX
+class function TInterlocked.Decrement(var Target: Integer): Integer;
+begin
+    result := Add(Target,-1);
 end;
 
-function InterlockedDecrement(var Addend: Integer): Integer;
-asm
-      MOV   EDX,-1
-      XCHG  EAX,EDX
- LOCK XADD  [EDX],EAX
-      DEC   EAX
+class function TInterlocked.Increment(var Target: Integer): Integer;
+begin
+  result := Add(Target,1);
 end;
+
+class function TInterlocked.Add(var Target: Integer; Increment: Integer): Integer;
+{$IFNDEF CPUX86}
+asm
+  .NOFRAME
+  MOV  EAX,EDX
+  LOCK XADD [RCX].Integer,EAX
+  ADD  EAX,EDX
+end;
+{$ELSE CPUX86}
+asm
+  MOV  ECX,EDX
+  XCHG EAX,EDX
+  LOCK XADD [EDX],EAX
+  ADD  EAX,ECX
+end;
+{$ENDIF}
+{$ENDIF DELPHI_XE2_UPE2}
+
 
 
 constructor TWeakReference<T>.Create(const data: T);
@@ -130,7 +164,7 @@ begin
     weakRef.AddWeakRef(@FData);
   end
   else
-    raise Exception.Create('TWeakReference can only be used with objects derived from TWeakReferencedObject');
+    raise Exception.Create(SWeakReferenceError);
 end;
 
 function TWeakReference<T>.Data: T;
@@ -138,7 +172,10 @@ begin
   result := Default(T); /// can't assign nil to T
   if FData <> nil then
   begin
-    if Supports(FData,IInterface,result) then
+    //Make sure that the object supports the interface which is our generic type if we
+    //simply pass in the interface base type, the method table doesn't work correctly
+    if Supports(FData, GetTypeData(TypeInfo(T))^.Guid, result) then
+    //if Supports(FData, IInterface, result) then
       result := T(result);
   end;
 end;
@@ -213,11 +250,10 @@ begin
   end;
 end;
 
-
 procedure TWeakReferencedObject.AfterConstruction;
 begin
-// Release the constructor's implicit refcount
-  InterlockedDecrement(FRefCount);
+  // Release the constructor's implicit refcount
+  TInterlocked.Decrement(FRefCount);
 end;
 
 procedure TWeakReferencedObject.BeforeDestruction;
@@ -243,8 +279,8 @@ end;
 
 class function TWeakReferencedObject.NewInstance: TObject;
 begin
-// Set an implicit refcount so that refcounting
-// during construction won't destroy the object.
+  // Set an implicit refcount so that refcounting
+  // during construction won't destroy the object.
   Result := inherited NewInstance;
   TWeakReferencedObject(Result).FRefCount := 1;
 end;
@@ -257,15 +293,14 @@ begin
     Result := E_NOINTERFACE;
 end;
 
-
 function TWeakReferencedObject._AddRef: Integer;
 begin
-  Result := InterlockedIncrement(FRefCount);
+  Result := TInterlocked.Increment(FRefCount);
 end;
 
 function TWeakReferencedObject._Release: Integer;
 begin
-  Result := InterlockedDecrement(FRefCount);
+  Result := TInterlocked.Decrement(FRefCount);
   if Result = 0  then
     Destroy;
 end;
