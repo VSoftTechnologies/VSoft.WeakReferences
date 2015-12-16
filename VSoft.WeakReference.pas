@@ -46,7 +46,13 @@ unit VSoft.WeakReference;
 
 interface
 
+uses
+  System.SysUtils;
+
 type
+  EWeakReferenceNotSupportedError = class(Exception);
+
+  {$REGION 'IWeakReferenceableObject'}
   /// Implemented by our weak referenced object base class
   IWeakReferenceableObject = interface
     ['{3D7F9CB5-27F2-41BF-8C5F-F6195C578755}']
@@ -54,7 +60,9 @@ type
     procedure RemoveWeakRef(value : Pointer);
     function GetRefCount : integer;
   end;
+  {$ENDREGION}
 
+  {$REGION 'TWeakReferencedObject'}
   ///  This is our base class for any object that can have a weak reference to
   ///  it. It implements IInterface so the object can also be used just like
   ///  any normal reference counted objects in Delphi.
@@ -62,38 +70,93 @@ type
   protected
     FWeakReferences : Array of Pointer;
     FRefCount: Integer;
-    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
-    function _AddRef: Integer; stdcall;
-    function _Release: Integer; stdcall;
-    procedure AddWeakRef(value : Pointer);
-    procedure RemoveWeakRef(value : Pointer);
-    function GetRefCount : integer;
+    function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
+    function _AddRef: Integer; virtual; stdcall;
+    function _Release: Integer; virtual; stdcall;
+    procedure AddWeakRef(value : Pointer); virtual;
+    procedure RemoveWeakRef(value : Pointer); virtual;
+    function GetRefCount : integer; virtual;
   public
     procedure AfterConstruction; override;
     procedure BeforeDestruction; override;
     {$IFDEF NEXTGEN}[Result: Unsafe]{$ENDIF} class function NewInstance: TObject; override;
     property RefCount: Integer read FRefCount;
   end;
+  {$ENDREGION}
 
+  {$REGION 'TNoCountedWeakReferencedObject'}
+  /// This class acts like a normal TObject but with the WeakReferenceable funcionality
+  /// from TWeakReferencedObject.
+  TNoCountedWeakReferencedObject = class(TWeakReferencedObject, IInterface)
+  public
+    function _Release: Integer; override; stdcall;
+  end;
+  {$ENDREGION}
+
+  {$REGION 'IWeakReference'}
   // This is our generic WeakReference interface
   IWeakReference<T : IInterface> = interface//FI:W524
     ['{A6B88944-15A2-4FFD-B755-1B17960401BE}']
     function IsAlive : boolean;
     function Data : T;
+    function DataImplementer: TWeakReferencedObject;
   end;
+  {$ENDREGION}
 
+<<<<<<< .merge_file_a04720
   //The actual WeakReference implementation.
   TWeakReference<T: IInterface> = class(TInterfacedObject, IWeakReference<T>)
+=======
+  {$REGION 'TWeakReference'}
+  //The aatual WeakReference implementation.
+  TWeakReference<T: IInterface> = class(TInterfacedObject,IWeakReference<T>)
+>>>>>>> .merge_file_a10084
   private
-    FData : TObject;
+    FData : TWeakReferencedObject;
   protected
     function IsAlive : boolean;
     function Data : T;
+    function DataImplementer: TWeakReferencedObject;
   public
     constructor Create(const data : T);
     destructor Destroy;override;
   end;
+  {$ENDREGION}
 
+  {$REGION 'TAggregatedWeakReferencedObject'}
+  /// This class adds the weakreferenceable functionality to an aggregated object.
+  /// It behaves like the known TAggregatedObject from System.pas extended by an interface constraint
+  /// to declare its controller.
+  TAggregatedWeakReferencedObject<T: IInterface> = class(TWeakReferencedObject, IInterface)
+  strict private
+    FController: IWeakReference<T>;
+  strict protected
+    function Controller: T;
+    function ControllerImplementer: TWeakReferencedObject;
+  public
+    constructor Create(const AController: T);
+
+    function QueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
+    function _AddRef: Integer; override; stdcall;
+    function _Release: Integer; override; stdcall;
+
+    procedure AddWeakRef(value : Pointer); override;
+    procedure RemoveWeakRef(value : Pointer); override;
+    function GetRefCount : integer; override;
+  end;
+  {$ENDREGION}
+
+  {$REGION 'TContainedWeakReferencedObject'}
+  /// This class adds the weakreferenceable functionality to an contained object.
+  /// It behaves like the known TContainedObject from System.pas extended by an interface constraint
+  /// to declare its controller.
+  TContainedWeakReferencedObject<T: IInterface> = class(TAggregatedWeakReferencedObject<T>, IInterface)
+  public
+    function QueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
+  end;
+  {$ENDREGION}
+
+  procedure RaiseWeakReferenceNotSupportedError;
 
 resourcestring
   SWeakReferenceError = 'TWeakReference can only be used with objects derived from TWeakReferencedObject';
@@ -101,6 +164,7 @@ resourcestring
 implementation
 
 uses
+<<<<<<< .merge_file_a04720
   {$IFDEF USE_NS}
   System.TypInfo,
   System.Classes,
@@ -121,6 +185,15 @@ type
     class function Decrement(var Target: Integer): Integer; static; inline;
     class function Add(var Target: Integer; Increment: Integer): Integer;static;
   end;
+=======
+  TypInfo,
+  classes;
+
+procedure RaiseWeakReferenceNotSupportedError;
+begin
+  raise EWeakReferenceNotSupportedError.Create('TWeakReference can only be used with objects derived from TWeakReferencedObject');
+end;
+>>>>>>> .merge_file_a10084
 
 class function TInterlocked.Decrement(var Target: Integer): Integer;
 begin
@@ -151,7 +224,7 @@ end;
 {$ENDIF DELPHI_XE2_UPE2}
 
 
-
+{$REGION 'TWeakReference'}
 constructor TWeakReference<T>.Create(const data: T);
 var
   weakRef : IWeakReferenceableObject;
@@ -160,11 +233,15 @@ begin
   d := IInterface(data);
   if Supports(d,IWeakReferenceableObject,weakRef) then
   begin
-    FData := d as TObject;
+    FData := d as TWeakReferencedObject;
     weakRef.AddWeakRef(@FData);
   end
   else
+<<<<<<< .merge_file_a04720
     raise Exception.Create(SWeakReferenceError);
+=======
+    RaiseWeakReferenceNotSupportedError;
+>>>>>>> .merge_file_a10084
 end;
 
 function TWeakReference<T>.Data: T;
@@ -175,9 +252,17 @@ begin
     //Make sure that the object supports the interface which is our generic type if we
     //simply pass in the interface base type, the method table doesn't work correctly
     if Supports(FData, GetTypeData(TypeInfo(T))^.Guid, result) then
+<<<<<<< .merge_file_a04720
     //if Supports(FData, IInterface, result) then
+=======
+>>>>>>> .merge_file_a10084
       result := T(result);
   end;
+end;
+
+function TWeakReference<T>.DataImplementer: TWeakReferencedObject;
+begin
+  Result := FData;
 end;
 
 destructor TWeakReference<T>.Destroy;
@@ -200,7 +285,9 @@ function TWeakReference<T>.IsAlive: boolean;
 begin
   result := FData <> nil;
 end;
+{$ENDREGION}
 
+{$REGION 'TWeakReferencedObject'}
 { TWeakReferencedObject }
 
 procedure TWeakReferencedObject.AddWeakRef(value: Pointer);
@@ -304,6 +391,76 @@ begin
   if Result = 0  then
     Destroy;
 end;
+{$ENDREGION}
 
+{$REGION 'TNoCountedWeakReferencedObject'}
+{ TNoCountedWeakReferencedObject }
+
+function TNoCountedWeakReferencedObject._Release: Integer;
+begin
+  Result := InterlockedDecrement(FRefCount);
+end;
+{$ENDREGION}
+
+{$REGION 'TAggregatedWeakReferencedObject'}
+{ TAggregatedWeakReferencedObject }
+
+procedure TAggregatedWeakReferencedObject<T>.AddWeakRef(value: Pointer);
+begin
+  ControllerImplementer.AddWeakRef(value);
+end;
+
+function TAggregatedWeakReferencedObject<T>.Controller: T;
+begin
+  Result := FController.Data;
+end;
+
+function TAggregatedWeakReferencedObject<T>.ControllerImplementer: TWeakReferencedObject;
+begin
+  Result := FController.DataImplementer;
+end;
+
+constructor TAggregatedWeakReferencedObject<T>.Create(const AController: T);
+begin
+  FController := TWeakReference<T>.Create(AController);
+end;
+
+function TAggregatedWeakReferencedObject<T>.GetRefCount: integer;
+begin
+  Result := ControllerImplementer.GetRefCount;
+end;
+
+function TAggregatedWeakReferencedObject<T>.QueryInterface(const IID: TGUID; out Obj): HResult;
+begin
+  Result := Controller.QueryInterface(IID, Obj);
+end;
+
+procedure TAggregatedWeakReferencedObject<T>.RemoveWeakRef(value: Pointer);
+begin
+  ControllerImplementer.RemoveWeakRef(value);
+end;
+
+function TAggregatedWeakReferencedObject<T>._AddRef: Integer;
+begin
+  Result := Controller._AddRef;
+end;
+
+function TAggregatedWeakReferencedObject<T>._Release: Integer;
+begin
+  Result := Controller._Release;
+end;
+{$ENDREGION}
+
+{$REGION 'TContainedWeakReferencedObject'}
+{ TContainedWeakReferencedObject<T> }
+
+function TContainedWeakReferencedObject<T>.QueryInterface(const IID: TGUID; out Obj): HResult;
+begin
+  if GetInterface(IID, Obj) then
+    Result := 0
+  else
+    Result := E_NOINTERFACE;
+end;
+{$ENDREGION}
 
 end.
