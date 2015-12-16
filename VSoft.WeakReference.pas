@@ -103,14 +103,9 @@ type
   end;
   {$ENDREGION}
 
-<<<<<<< .merge_file_a04720
   //The actual WeakReference implementation.
-  TWeakReference<T: IInterface> = class(TInterfacedObject, IWeakReference<T>)
-=======
   {$REGION 'TWeakReference'}
-  //The aatual WeakReference implementation.
-  TWeakReference<T: IInterface> = class(TInterfacedObject,IWeakReference<T>)
->>>>>>> .merge_file_a10084
+  TWeakReference<T: IInterface> = class(TInterfacedObject, IWeakReference<T>)
   private
     FData : TWeakReferencedObject;
   protected
@@ -164,18 +159,21 @@ resourcestring
 implementation
 
 uses
-<<<<<<< .merge_file_a04720
   {$IFDEF USE_NS}
   System.TypInfo,
   System.Classes,
-  System.Sysutils,
   System.SyncObjs;
   {$ELSE}
   TypInfo,
   classes,
-  SysUtils,
   SyncObjs;
   {$ENDIF}
+
+procedure RaiseWeakReferenceNotSupportedError;
+begin
+  raise EWeakReferenceNotSupportedError.Create(SWeakReferenceError);
+end;
+
 
 {$IFNDEF DELPHI_XE2_UP}
 type
@@ -185,15 +183,8 @@ type
     class function Decrement(var Target: Integer): Integer; static; inline;
     class function Add(var Target: Integer; Increment: Integer): Integer;static;
   end;
-=======
-  TypInfo,
-  classes;
 
-procedure RaiseWeakReferenceNotSupportedError;
-begin
-  raise EWeakReferenceNotSupportedError.Create('TWeakReference can only be used with objects derived from TWeakReferencedObject');
-end;
->>>>>>> .merge_file_a10084
+
 
 class function TInterlocked.Decrement(var Target: Integer): Integer;
 begin
@@ -237,11 +228,7 @@ begin
     weakRef.AddWeakRef(@FData);
   end
   else
-<<<<<<< .merge_file_a04720
-    raise Exception.Create(SWeakReferenceError);
-=======
     RaiseWeakReferenceNotSupportedError;
->>>>>>> .merge_file_a10084
 end;
 
 function TWeakReference<T>.Data: T;
@@ -252,10 +239,6 @@ begin
     //Make sure that the object supports the interface which is our generic type if we
     //simply pass in the interface base type, the method table doesn't work correctly
     if Supports(FData, GetTypeData(TypeInfo(T))^.Guid, result) then
-<<<<<<< .merge_file_a04720
-    //if Supports(FData, IInterface, result) then
-=======
->>>>>>> .merge_file_a10084
       result := T(result);
   end;
 end;
@@ -398,7 +381,7 @@ end;
 
 function TNoCountedWeakReferencedObject._Release: Integer;
 begin
-  Result := InterlockedDecrement(FRefCount);
+  Result := TInterlocked.Decrement(FRefCount);
 end;
 {$ENDREGION}
 
