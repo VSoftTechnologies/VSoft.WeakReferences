@@ -3,8 +3,12 @@
 *.dcu
 *.obj
 *.exe
-*.mes
-*.res
+*.bpl
+*.bpi
+*.dcp
+*.rsm
+*.stat
+*.map
 
 # Backup files    #
 ###################
@@ -17,10 +21,24 @@
 *.identcache
 *.dsk
 *.tvsconfig
+*.otares
+*.drc
+*.rc
+*.res
+*.dres
 
 # Output Folders  #
 ###################
 /Win32
 /Win64
+/OSX32
+/__history
 /Tests/Win32
 /Tests/Win64
+/Test/__history
+
+
+# Testing Output  #
+###################
+Tests/dunit-report.xml
+Tests/dunitx-results.xml

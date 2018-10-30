@@ -1,30 +1,4 @@
-{***************************************************************************}
-{                                                                           }
-{           DUnitX                                                          }
-{                                                                           }
-{           Copyright (C) 2015 Vincent Parrett & Contributors               }
-{                                                                           }
-{           vincent@finalbuilder.com                                        }
-{           http://www.finalbuilder.com                                     }
-{                                                                           }
-{                                                                           }
-{***************************************************************************}
-{                                                                           }
-{  Licensed under the Apache License, Version 2.0 (the "License");          }
-{  you may not use this file except in compliance with the License.         }
-{  You may obtain a copy of the License at                                  }
-{                                                                           }
-{      http://www.apache.org/licenses/LICENSE-2.0                           }
-{                                                                           }
-{  Unless required by applicable law or agreed to in writing, software      }
-{  distributed under the License is distributed on an "AS IS" BASIS,        }
-{  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. }
-{  See the License for the specific language governing permissions and      }
-{  limitations under the License.                                           }
-{                                                                           }
-{***************************************************************************}
-
- //Basic Version of Compiler Supported
+//Basic Version of Compiler Supported
 {$IFDEF CONDITIONALEXPRESSIONS}  //Started being defined with D2009
    {$IF CompilerVersion < 21.0} // Before RAD Studio 2010
       {$DEFINE UNSUPPORTED_COMPILER_VERSION}
@@ -40,9 +14,8 @@
 //Use namespaces
 {$DEFINE USE_NS}
 
-
-
-{$DEFINE DELPHI_XE8_DOWN}
+{$DEFINE DELPHIX_BERLIN_DOWN}
+{$DEFINE DELPHIX_SEATTLE_DOWN}
 {$DEFINE DELPHI_XE8_DOWN}
 {$DEFINE DELPHI_XE7_DOWN}
 {$DEFINE DELPHI_XE6_DOWN}
@@ -213,3 +186,105 @@
   {$UNDEF DELPHI_XE7_DOWN}
   {$UNDEF DELPHI_XE8_DOWN}
 {$ENDIF VER300}
+
+{$IFDEF VER310} // RAD Studio 10.1 Berlin
+  {$DEFINE DELPHI_2010_UP}
+  {$DEFINE DELPHI_XE_UP}
+  {$DEFINE DELPHI_XE2_UP}
+  {$DEFINE DELPHI_XE3_UP}
+  {$DEFINE DELPHI_XE4_UP}
+  {$DEFINE DELPHI_XE5_UP}
+  {$DEFINE DELPHI_XE6_UP}
+  {$DEFINE DELPHI_XE7}
+  {$DEFINE DELPHI_XE7_UP}
+  {$DEFINE DELPHI_XE8_UP}
+  {$DEFINE DELPHIX_SEATTLE_UP}
+  {$DEFINE DELPHIX_SEATTLE}
+  {$DEFINE DELPHI_XE10_UP}
+  {$DEFINE SUPPORTS_REGEX}
+  {$DEFINE USE_NS}
+  {$UNDEF DELPHI_2010_DOWN}
+  {$UNDEF DELPHI_XE_DOWN}
+  {$UNDEF DELPHI_XE2_DOWN}
+  {$UNDEF DELPHI_XE3_DOWN}
+  {$UNDEF DELPHI_XE4_DOWN}
+  {$UNDEF DELPHI_XE5_DOWN}
+  {$UNDEF DELPHI_XE6_DOWN}
+  {$UNDEF DELPHI_XE7_DOWN}
+  {$UNDEF DELPHI_XE8_DOWN}
+  {$UNDEF DELPHIX_BERLIN_DOWN}
+  
+{$ENDIF VER310}
+
+{$IFDEF VER320} // RAD Studio 10.2 Tokyo
+  {$DEFINE DELPHI_2010_UP}
+  {$DEFINE DELPHI_XE_UP}
+  {$DEFINE DELPHI_XE2_UP}
+  {$DEFINE DELPHI_XE3_UP}
+  {$DEFINE DELPHI_XE4_UP}
+  {$DEFINE DELPHI_XE5_UP}
+  {$DEFINE DELPHI_XE6_UP}
+  {$DEFINE DELPHI_XE7}
+  {$DEFINE DELPHI_XE7_UP}
+  {$DEFINE DELPHI_XE8_UP}
+  {$DEFINE DELPHIX_SEATTLE_UP}
+  {$DEFINE DELPHIX_SEATTLE}
+  {$DEFINE DELPHI_XE10_UP}
+  {$DEFINE DELPHI_XE101_UP}
+  {$DEFINE DELPHI_XE102_UP}
+  {$DEFINE SUPPORTS_REGEX}
+  {$DEFINE USE_NS}
+  {$UNDEF DELPHI_2010_DOWN}
+  {$UNDEF DELPHI_XE_DOWN}
+  {$UNDEF DELPHI_XE2_DOWN}
+  {$UNDEF DELPHI_XE3_DOWN}
+  {$UNDEF DELPHI_XE4_DOWN}
+  {$UNDEF DELPHI_XE5_DOWN}
+  {$UNDEF DELPHI_XE6_DOWN}
+  {$UNDEF DELPHI_XE7_DOWN}
+  {$UNDEF DELPHI_XE8_DOWN}
+  {$UNDEF DELPHI_XE10_DOWN}
+  {$UNDEF DELPHI_XE101_DOWN}
+  {$DEFINE DELPHI_XE102_DOWN} 
+{$ENDIF VER320}
+
+{$IFDEF VER330} // RAD Studio 10.3 Rio
+  {$DEFINE DELPHI_2010_UP}
+  {$DEFINE DELPHI_XE_UP}
+  {$DEFINE DELPHI_XE2_UP}
+  {$DEFINE DELPHI_XE3_UP}
+  {$DEFINE DELPHI_XE4_UP}
+  {$DEFINE DELPHI_XE5_UP}
+  {$DEFINE DELPHI_XE6_UP}
+  {$DEFINE DELPHI_XE7}
+  {$DEFINE DELPHI_XE7_UP}
+  {$DEFINE DELPHI_XE8_UP}
+  {$DEFINE DELPHIX_SEATTLE_UP}
+  {$DEFINE DELPHIX_SEATTLE}
+  {$DEFINE DELPHI_XE10_UP}
+  {$DEFINE DELPHI_XE101_UP}
+  {$DEFINE DELPHI_XE102_UP}
+  {$DEFINE DELPHI_XE103_UP}
+  {$DEFINE SUPPORTS_REGEX}
+  {$DEFINE USE_NS}
+  {$UNDEF DELPHI_2010_DOWN}
+  {$UNDEF DELPHI_XE_DOWN}
+  {$UNDEF DELPHI_XE2_DOWN}
+  {$UNDEF DELPHI_XE3_DOWN}
+  {$UNDEF DELPHI_XE4_DOWN}
+  {$UNDEF DELPHI_XE5_DOWN}
+  {$UNDEF DELPHI_XE6_DOWN}
+  {$UNDEF DELPHI_XE7_DOWN}
+  {$UNDEF DELPHI_XE8_DOWN}
+  {$UNDEF DELPHI_XE10_DOWN}
+  {$UNDEF DELPHI_XE101_DOWN}
+  {$UNDEF DELPHI_XE102_DOWN}
+  {$UNDEF DELPHI_XE103_DOWN}
+{$ENDIF VER320}
+
+
+{$IFNDEF SUPPORTS_REGEX}
+  {$IFDEF USE_TREGEXPR}
+    {$DEFINE SUPPORTS_REGEX}
+  {$ENDIF}
+{$ENDIF}
