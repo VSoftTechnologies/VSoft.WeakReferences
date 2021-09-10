@@ -51,6 +51,7 @@ uses
 
 type
   /// Implemented by our weak referenced object base class
+  {$M+} //allows mocking
   IWeakReferenceableObject = interface
     ['{3D7F9CB5-27F2-41BF-8C5F-F6195C578755}']
     procedure AddWeakRef(value : Pointer);
