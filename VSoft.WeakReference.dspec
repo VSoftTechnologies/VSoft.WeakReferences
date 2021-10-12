@@ -1,7 +1,7 @@
 {
   "metadata": {
     "id": "VSoft.WeakReference",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Weak References",
     "authors": "Vincent Parrett",
     "projectUrl": "https://github.com/VSoftTechnologies/VSoft.WeakReference",
@@ -71,7 +71,7 @@
       "template": "default"
     },
     {
-      "compiler": "11",
+      "compiler": "11.0",
       "platforms": "Win32, Win64",
       "template": "default"
     }
