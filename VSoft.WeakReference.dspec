@@ -1,7 +1,7 @@
 {
   "metadata": {
     "id": "VSoft.WeakReference",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "description": "Weak References",
     "authors": "Vincent Parrett",
     "projectUrl": "https://github.com/VSoftTechnologies/VSoft.WeakReference",
@@ -75,6 +75,11 @@
       "compiler": "11.0",
       "platforms": "Win32, Win64",
       "template": "default"
+    },
+    {
+      "compiler": "12.0",
+      "platforms": "Win32, Win64",
+      "template": "12+"
     }
   ],
   "templates": [
@@ -107,6 +112,38 @@
         {
           "id": "Runtime",
           "project": ".\\packages\\Rad Studio $compilerWithCodeName$\\VSoft.WeakReferenceR.dproj"
+        }
+      ]
+    },
+    {
+      "name": "12+",
+      "source": [
+        {
+          "src": "src\\*.pas",
+          "dest": "src"
+        },
+        {
+          "src": "src\\*.inc",
+          "dest": "src"
+        },
+        {
+          "src": "packages\\Rad Studio $compilerNoPoint$\\VSoft.WeakReferenceR.dpk",
+          "dest": "packages\\Rad Studio $compilerNoPoint$"
+        },
+        {
+          "src": "packages\\Rad Studio $compilerNoPoint$\\VSoft.WeakReferenceR.dproj",
+          "dest": "packages\\Rad Studio $compilerNoPoint$"
+        }
+      ],
+      "searchPaths": [
+        {
+          "path": "src"
+        }
+      ],
+      "build": [
+        {
+          "id": "Runtime",
+          "project": ".\\packages\\Rad Studio $compilerNoPoint$\\VSoft.WeakReferenceR.dproj"
         }
       ]
     }
