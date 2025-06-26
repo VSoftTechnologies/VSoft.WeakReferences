@@ -1,151 +1,159 @@
 {
-  "metadata": {
-    "id": "VSoft.WeakReference",
-    "version": "0.1.5",
-    "description": "Weak References",
-    "authors": "Vincent Parrett",
-    "projectUrl": "https://github.com/VSoftTechnologies/VSoft.WeakReference",
-    "repositoryUrl": "https://github.com/VSoftTechnologies/VSoft.WeakReference",
-    "license": "Apache-2.0",
-    "copyright": "Vincent Parrett and contributors",
-    "tags": "weak references"
+ "metadata": {
+  "id": "VSoft.WeakReference",
+  "version": "0.1.6",
+  "description": "Weak References",
+  "authors": "Vincent Parrett",
+  "projectUrl": "https://github.com/VSoftTechnologies/VSoft.WeakReference",
+  "repositoryUrl": "https://github.com/VSoftTechnologies/VSoft.WeakReference",
+  "license": "Apache-2.0",
+  "copyright": "Vincent Parrett and contributors",
+  "tags": "weak references",
+  "readme": "README.md"
+ },
+ "targetPlatforms": [
+  {
+   "compiler": "12.0",
+   "platforms": "Win32, Win64",
+   "template": "12+"
   },
-  "targetPlatforms": [
+  {
+   "compiler": "11.0",
+   "platforms": "Win32, Win64",
+   "template": "default"
+  },
+  {
+   "compiler": "10.4",
+   "platforms": "Win32, Win64",
+   "template": "default"
+  },
+  {
+   "compiler": "10.3",
+   "platforms": "Win32, Win64",
+   "template": "default"
+  },
+  {
+   "compiler": "10.2",
+   "platforms": "Win32, Win64",
+   "template": "default"
+  },
+  {
+   "compiler": "10.1",
+   "platforms": "Win32, Win64",
+   "template": "default"
+  },
+  {
+   "compiler": "10.0",
+   "platforms": "Win32, Win64",
+   "template": "default"
+  },
+  {
+   "compiler": "XE8",
+   "platforms": "Win32, Win64",
+   "template": "default"
+  },
+  {
+   "compiler": "XE7",
+   "platforms": "Win32, Win64",
+   "template": "default"
+  },
+  {
+   "compiler": "XE6",
+   "platforms": "Win32, Win64",
+   "template": "default"
+  },
+  {
+   "compiler": "XE5",
+   "platforms": "Win32, Win64",
+   "template": "default"
+  },
+  {
+   "compiler": "XE4",
+   "platforms": "Win32, Win64",
+   "template": "default"
+  },
+  {
+   "compiler": "XE3",
+   "platforms": "Win32, Win64",
+   "template": "default"
+  },
+  {
+   "compiler": "XE2",
+   "platforms": "Win32, Win64",
+   "template": "default"
+  },
+  {
+   "compiler": "13.0",
+   "platforms": "Win32, Win64",
+   "template": "12+"
+  }
+ ],
+ "templates": [
+  {
+   "name": "12+",
+   "source": [
     {
-      "compiler": "XE2",
-      "platforms": "Win32, Win64",
-      "template": "default"
+     "src": "src\\*.pas",
+     "dest": "src"
     },
     {
-      "compiler": "XE3",
-      "platforms": "Win32, Win64",
-      "template": "default"
+     "src": "src\\*.inc",
+     "dest": "src"
     },
     {
-      "compiler": "XE4",
-      "platforms": "Win32, Win64",
-      "template": "default"
+     "src": "packages\\Rad Studio $compilerNoPoint$\\VSoft.WeakReferenceR.dpk",
+     "dest": "packages\\Rad Studio $compilerNoPoint$"
     },
     {
-      "compiler": "XE5",
-      "platforms": "Win32, Win64",
-      "template": "default"
-    },
-    {
-      "compiler": "XE6",
-      "platforms": "Win32, Win64",
-      "template": "default"
-    },
-    {
-      "compiler": "XE7",
-      "platforms": "Win32, Win64",
-      "template": "default"
-    },
-    {
-      "compiler": "XE8",
-      "platforms": "Win32, Win64",
-      "template": "default"
-    },
-    {
-      "compiler": "10.0",
-      "platforms": "Win32, Win64",
-      "template": "default"
-    },
-    {
-      "compiler": "10.1",
-      "platforms": "Win32, Win64",
-      "template": "default"
-    },
-    {
-      "compiler": "10.2",
-      "platforms": "Win32, Win64",
-      "template": "default"
-    },
-    {
-      "compiler": "10.3",
-      "platforms": "Win32, Win64",
-      "template": "default"
-    },
-    {
-      "compiler": "10.4",
-      "platforms": "Win32, Win64",
-      "template": "default"
-    },
-    {
-      "compiler": "11.0",
-      "platforms": "Win32, Win64",
-      "template": "default"
-    },
-    {
-      "compiler": "12.0",
-      "platforms": "Win32, Win64",
-      "template": "12+"
+     "src": "packages\\Rad Studio $compilerNoPoint$\\VSoft.WeakReferenceR.dproj",
+     "dest": "packages\\Rad Studio $compilerNoPoint$"
     }
-  ],
-  "templates": [
+   ],
+   "searchPaths": [
     {
-      "name": "default",
-      "source": [
-        {
-          "src": "src\\*.pas",
-          "dest": "src"
-        },
-        {
-          "src": "src\\*.inc",
-          "dest": "src"
-        },
-        {
-          "src": "packages\\Rad Studio $compilerWithCodeName$\\VSoft.WeakReferenceR.dpk",
-          "dest": "packages\\Rad Studio $compilerWithCodeName$"
-        },
-        {
-          "src": "packages\\Rad Studio $compilerWithCodeName$\\VSoft.WeakReferenceR.dproj",
-          "dest": "packages\\Rad Studio $compilerWithCodeName$"
-        }
-      ],
-      "searchPaths": [
-        {
-          "path": "src"
-        }
-      ],
-      "build": [
-        {
-          "id": "Runtime",
-          "project": ".\\packages\\Rad Studio $compilerWithCodeName$\\VSoft.WeakReferenceR.dproj"
-        }
-      ]
+     "path": "src"
+    }
+   ],
+   "build": [
+    {
+     "id": "Runtime",
+     "project": ".\\packages\\Rad Studio $compilerNoPoint$\\VSoft.WeakReferenceR.dproj",
+     "config": "Release"
+    }
+   ]
+  },
+  {
+   "name": "default",
+   "source": [
+    {
+     "src": "src\\*.pas",
+     "dest": "src"
     },
     {
-      "name": "12+",
-      "source": [
-        {
-          "src": "src\\*.pas",
-          "dest": "src"
-        },
-        {
-          "src": "src\\*.inc",
-          "dest": "src"
-        },
-        {
-          "src": "packages\\Rad Studio $compilerNoPoint$\\VSoft.WeakReferenceR.dpk",
-          "dest": "packages\\Rad Studio $compilerNoPoint$"
-        },
-        {
-          "src": "packages\\Rad Studio $compilerNoPoint$\\VSoft.WeakReferenceR.dproj",
-          "dest": "packages\\Rad Studio $compilerNoPoint$"
-        }
-      ],
-      "searchPaths": [
-        {
-          "path": "src"
-        }
-      ],
-      "build": [
-        {
-          "id": "Runtime",
-          "project": ".\\packages\\Rad Studio $compilerNoPoint$\\VSoft.WeakReferenceR.dproj"
-        }
-      ]
+     "src": "src\\*.inc",
+     "dest": "src"
+    },
+    {
+     "src": "packages\\Rad Studio $compilerWithCodeName$\\VSoft.WeakReferenceR.dpk",
+     "dest": "packages\\Rad Studio $compilerWithCodeName$"
+    },
+    {
+     "src": "packages\\Rad Studio $compilerWithCodeName$\\VSoft.WeakReferenceR.dproj",
+     "dest": "packages\\Rad Studio $compilerWithCodeName$"
     }
-  ]
+   ],
+   "searchPaths": [
+    {
+     "path": "src"
+    }
+   ],
+   "build": [
+    {
+     "id": "Runtime",
+     "project": ".\\packages\\Rad Studio $compilerWithCodeName$\\VSoft.WeakReferenceR.dproj",
+     "config": "Release"
+    }
+   ]
+  }
+ ]
 }
