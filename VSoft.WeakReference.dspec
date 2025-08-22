@@ -1,11 +1,12 @@
 {
  "metadata": {
   "id": "VSoft.WeakReference",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Weak References",
   "authors": "Vincent Parrett",
   "projectUrl": "https://github.com/VSoftTechnologies/VSoft.WeakReference",
   "repositoryUrl": "https://github.com/VSoftTechnologies/VSoft.WeakReference",
+  "repositoryCommit": "#HASH#",
   "license": "Apache-2.0",
   "copyright": "Vincent Parrett and contributors",
   "tags": "weak references",
